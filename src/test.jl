@@ -1,5 +1,6 @@
-using Base.Test
+include("UnicodeExtras.jl")
 using UnicodeExtras
+using Base.Test
 
 noel1 = UnicodeText("noe\u0308l")
 noel2 = UnicodeText("noël")
