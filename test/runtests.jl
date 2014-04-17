@@ -1,4 +1,4 @@
-include("UnicodeExtras.jl")
+include("../src/UnicodeExtras.jl")
 using UnicodeExtras
 using Base.Test
 
