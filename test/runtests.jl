@@ -19,3 +19,8 @@ set_locale("tr")
 @test uppercase("testingß") == "TESTİNGSS"
 @test uppercase(UnicodeText("testingß")) == "TESTİNGSS"
 
+s = "Äpple"
+b = encode(s, "iso-8859-1")
+s2 = decode(b, "iso-8859-1")
+@test s == s2
+@test b == [196,112,112,108,101]

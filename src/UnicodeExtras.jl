@@ -4,6 +4,8 @@ using ICU
 
 export
     UnicodeText,
+    decode,
+    encode,
     foldcase,
     set_locale, # from ICU
     titlecase
@@ -106,5 +108,30 @@ for f in (:foldcase,:lowercase,:titlecase,:uppercase)
 end
 
 show(io::IO, t::UnicodeText) = show(io, UTF16String(t.data))
+
+## encodings ##
+
+function transcode(src::Array{Uint8,1}, from::ASCIIString, to::ASCIIString)
+    src_cnv = ucnv_open(from)
+    dst_cnv = ucnv_open(to)
+    src_buf = IOBuffer(src)
+    dst_buf = IOBuffer()
+    Base.ensureroom(dst_buf, length(src))
+    pivot = ICU.UConverterPivot(16)
+    while ucnv_convertEx(dst_cnv, src_cnv, dst_buf, src_buf, pivot)
+        Base.ensureroom(dst_buf, dst_buf.size + length(src))
+    end
+    ucnv_close(src_cnv)
+    ucnv_close(dst_cnv)
+    takebuf_array(dst_buf)
+end
+
+function decode(b::Array{Uint8,1}, encoding::ASCIIString)
+    bytestring(transcode(b, encoding, "utf8"))
+end
+
+function encode(s::ByteString, encoding::ASCIIString)
+    transcode(s.data, "utf8", encoding)
+end
 
 end # module
