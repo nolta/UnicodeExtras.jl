@@ -9,24 +9,44 @@ Installation
 Usage
 -----
 
+### File encoding
+
+```jlcon
+julia> using UnicodeExtras
+
+julia> b = encode("Ålborg", "iso-8859-1")
+6-element Array{Uint8,1}:
+ 0xc5
+ 0x6c
+ 0x62
+ 0x6f
+ 0x72
+ 0x67
+
+julia> decode(b, "iso-8859-1")
+"Ålborg"
+```
+
 ### Case handling
 
 This package extends Julia's builtin `uppercase` and `lowercase` functions,
 and adds `titlecase` and `foldcase`.
 
-    julia> uppercase("testingß")
-    "TESTINGß"
+```jlcon
+julia> uppercase("testingß")
+"TESTINGß"
 
-    julia> using UnicodeExtras
+julia> using UnicodeExtras
 
-    julia> uppercase("testingß")
-    "TESTINGSS"
+julia> uppercase("testingß")
+"TESTINGSS"
 
-    julia> set_locale("tr")  # set locale to Turkish
-    "tr"
+julia> set_locale("tr")  # set locale to Turkish
+"tr"
 
-    julia> uppercase("testingß")
-    "TESTİNGSS"
+julia> uppercase("testingß")
+"TESTİNGSS"
+```
 
 Note that "ß" gets converted to "SS" after UnicodeExtras is loaded,
 and "i" gets converted to "İ" (dotted capital I)
