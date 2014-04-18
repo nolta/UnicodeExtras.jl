@@ -4,7 +4,7 @@ UnicodeExtras
 Installation
 ------------
 
-    julia> Pkg.add("UnicodeExtras")
+    julia> Pkg.clone("git://github.com/nolta/UnicodeExtras.git")
 
 Usage
 -----
