@@ -2,7 +2,22 @@ module UnicodeExtras
 
 using ICU
 
-export set_locale # from ICU
+export
+    UnicodeText,
+    foldcase,
+    set_locale, # from ICU
+    titlecase
+
+import Base: cmp,
+    convert,
+    endof,
+    getindex,
+    isequal,
+    isless,
+    length,
+    lowercase,
+    show,
+    uppercase
 
 ## lowercase, uppercase, foldcase, titlecase ##
 #
@@ -18,12 +33,6 @@ export set_locale # from ICU
 # after the locale is set to Turkish.
 #
 
-import Base: lowercase,
-             uppercase
-
-export foldcase,
-       titlecase
-
  foldcase(s::ASCIIString) = foldcase(utf8(s))
 titlecase(s::ASCIIString) = titlecase(utf8(s))
 
@@ -38,17 +47,6 @@ uppercase(s::UTF16String) = u_strToUpper(s)
 titlecase(s::UTF16String) = u_strToTitle(s)
 
 ## UnicodeText ##
-
-import Base: cmp,
-             convert,
-             endof,
-             getindex,
-             isequal,
-             isless,
-             length,
-             show
-
-export UnicodeText
 
 immutable UnicodeText
     data::Array{Uint16,1}
