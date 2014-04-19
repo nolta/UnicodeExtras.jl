@@ -14,17 +14,40 @@ Usage
 ```jlcon
 julia> using UnicodeExtras
 
-julia> b = encode("Ålborg", "iso-8859-1")
-6-element Array{Uint8,1}:
+julia> b = encode("Ålborg is eating apples", "iso-8859-1")
+23-element Array{Uint8,1}:
  0xc5
  0x6c
  0x62
  0x6f
  0x72
  0x67
+ 0x20
+ 0x69
+ 0x73
+ 0x20
+    ⋮
+ 0x69
+ 0x6e
+ 0x67
+ 0x20
+ 0x61
+ 0x70
+ 0x70
+ 0x6c
+ 0x65
+ 0x73
 
 julia> decode(b, "iso-8859-1")
-"Ålborg"
+"Ålborg is eating apples"
+
+julia> detect_encoding(b)
+5-element Array{ASCIIString,1}:
+ "ISO-8859-1"
+ "ISO-8859-2"
+ "Shift_JIS" 
+ "GB18030"   
+ "Big5"      
 ```
 
 ### Case handling

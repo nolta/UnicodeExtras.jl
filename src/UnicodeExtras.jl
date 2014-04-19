@@ -5,6 +5,7 @@ using ICU
 export
     UnicodeText,
     decode,
+    detect_encoding,
     encode,
     foldcase,
     set_locale, # from ICU
@@ -132,6 +133,15 @@ end
 
 function encode(s::ByteString, encoding::ASCIIString)
     transcode(s.data, "utf8", encoding)
+end
+
+function detect_encoding(b::Array{Uint8,1})
+   cs = ucsdet_open()
+   ucsdet_setText(cs, b)
+   a = ucsdet_detectAll(cs)
+   ret = ASCIIString[ucsdet_getName(x) for x in a]
+   ucsdet_close(cs)
+   ret
 end
 
 end # module
