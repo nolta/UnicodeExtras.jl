@@ -2,6 +2,8 @@ module UnicodeExtras
 
 using ICU
 
+using Compat
+
 export
     UnicodeText,
     decode,
@@ -52,7 +54,7 @@ titlecase(s::UTF16String) = u_strToTitle(s)
 ## UnicodeText ##
 
 immutable UnicodeText
-    data::Array{Uint16,1}
+    data::Array{UInt16,1}
 end
 
 UnicodeText(s::ByteString) = UnicodeText(utf16(s).data)
@@ -63,18 +65,18 @@ convert(::Type{UTF16String}, t::UnicodeText) = UTF16String(t.data)
 
 cmp(a::UnicodeText, b::UnicodeText) = ucol_strcoll(ICU.collator, a.data, b.data)
 # is this right?
-cmp(t::UnicodeText, s::String) = cmp(UTF16String(t.data), s)
-cmp(s::String, t::UnicodeText) = cmp(t, s)
+cmp(t::UnicodeText, s::AbstractString) = cmp(UTF16String(t.data), s)
+cmp(s::AbstractString, t::UnicodeText) = cmp(t, s)
 
 endof(t::UnicodeText) = length(t)
 
-isequal(a::UnicodeText, b::UnicodeText) = cmp(a,b) == 0
-isequal(a::UnicodeText, b::String)      = cmp(a,b) == 0
-isequal(a::String, b::UnicodeText)      = cmp(a,b) == 0
+isequal(a::UnicodeText, b::UnicodeText)    = cmp(a,b) == 0
+isequal(a::UnicodeText, b::AbstractString) = cmp(a,b) == 0
+isequal(a::AbstractString, b::UnicodeText) = cmp(a,b) == 0
 
-isless(a::UnicodeText, b::UnicodeText)  = cmp(a,b) < 0
-isless(a::UnicodeText, b::String)       = cmp(a,b) < 0
-isless(a::String, b::UnicodeText)       = cmp(a,b) < 0
+isless(a::UnicodeText, b::UnicodeText)     = cmp(a,b) < 0
+isless(a::UnicodeText, b::AbstractString)  = cmp(a,b) < 0
+isless(a::AbstractString, b::UnicodeText)  = cmp(a,b) < 0
 
 function length(t::UnicodeText)
     bi = ubrk_open(UBRK_CHARACTER, ICU.locale, t.data)
@@ -87,7 +89,7 @@ function length(t::UnicodeText)
 end
 
 getindex(t::UnicodeText, i::Int) = getindex(t, i:i)
-function getindex(t::UnicodeText, r::Range1{Int})
+function getindex(t::UnicodeText, r::UnitRange{Int})
     bi = ubrk_open(UBRK_CHARACTER, ICU.locale, t.data)
     offset = 0
     for i = 1:first(r)-1
@@ -112,7 +114,7 @@ show(io::IO, t::UnicodeText) = show(io, UTF16String(t.data))
 
 ## encodings ##
 
-function transcode(src::Array{Uint8,1}, from::ASCIIString, to::ASCIIString)
+function transcode(src::Array{UInt8,1}, from::ASCIIString, to::ASCIIString)
     src_cnv = ucnv_open(from)
     dst_cnv = ucnv_open(to)
     src_buf = IOBuffer(src)
@@ -127,7 +129,7 @@ function transcode(src::Array{Uint8,1}, from::ASCIIString, to::ASCIIString)
     takebuf_array(dst_buf)
 end
 
-function decode(b::Array{Uint8,1}, encoding::ASCIIString)
+function decode(b::Array{UInt8,1}, encoding::ASCIIString)
     bytestring(transcode(b, encoding, "utf8"))
 end
 
@@ -135,7 +137,7 @@ function encode(s::ByteString, encoding::ASCIIString)
     transcode(s.data, "utf8", encoding)
 end
 
-function detect_encoding(b::Array{Uint8,1})
+function detect_encoding(b::Array{UInt8,1})
    cs = ucsdet_open()
    ucsdet_setText(cs, b)
    a = ucsdet_detectAll(cs)
